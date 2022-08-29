@@ -1,0 +1,28 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.2
+  heroku: circleci/heroku@1.2.6
+
+jobs:
+  test:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn test:e2e
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - test
+      - heroku/deploy-via-git:
+          force: true
+          requires:
+            - test
+          filters:
+            branches:
+              only: main
