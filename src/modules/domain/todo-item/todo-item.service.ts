@@ -35,25 +35,21 @@ export class TodoItemService {
     paginationParams: PaginationParams,
     user: User,
   ): Promise<PaginationResult<TodoItem>> {
-    const todoItems = await this.todoItemsRepository.find({
+    const todoItems = await this.todoItemsRepository.findAndCount({
       where: { createdBy: { id: user.id } },
       skip: (paginationParams.page - 1) * paginationParams.limit,
       take: paginationParams.limit,
     });
 
-    const countItems = await this.todoItemsRepository.count({
-      where: { createdBy: { id: user.id } },
-    });
-
     const meta = {
       itemsPerPage: +paginationParams.limit,
-      totalItems: +countItems,
+      totalItems: +todoItems[1],
       currentPage: +paginationParams.page,
-      totalPages: +Math.ceil(countItems / paginationParams.limit),
+      totalPages: +Math.ceil(todoItems[1] / paginationParams.limit),
     };
 
     return {
-      data: todoItems,
+      data: todoItems[0],
       meta: meta,
     };
   }
