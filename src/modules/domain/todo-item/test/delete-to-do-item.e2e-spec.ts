@@ -6,6 +6,8 @@ import * as request from 'supertest';
 import { CategoryModule } from '../../category/category.module';
 import { TodoItemModule } from '../todo-item.module';
 
+//yarn commit
+
 let app: INestApplication;
 let appRequest: request.SuperTest<request.Test>;
 let token1: string;
