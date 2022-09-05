@@ -9,6 +9,9 @@ export class CreateTodoItemDto {
   @JoiSchema(['CREATE'], Joi.string().required())
   description: string;
 
+  @JoiSchema(['CREATE'], Joi.string().uuid().required())
+  categoryId: string;
+
   @JoiSchema(['CREATE'], Joi.forbidden())
   createdBy: User;
 }

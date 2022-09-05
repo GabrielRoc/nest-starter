@@ -3,15 +3,17 @@ import { Test } from '@nestjs/testing';
 import { AuthModule } from 'src/modules/infrastructure/auth/auth.module';
 import { DatabaseTestModule } from 'src/modules/infrastructure/database/database-test.module';
 import * as request from 'supertest';
+import { CategoryModule } from '../../category/category.module';
 import { TodoItemModule } from '../todo-item.module';
 
 let app: INestApplication;
 let appRequest: request.SuperTest<request.Test>;
 let token1: string;
+let categoryId: string;
 
 beforeAll(async () => {
   const module = await Test.createTestingModule({
-    imports: [DatabaseTestModule, AuthModule, TodoItemModule],
+    imports: [DatabaseTestModule, AuthModule, TodoItemModule, CategoryModule],
   }).compile();
   app = module.createNestApplication();
   await app.init();
@@ -37,6 +39,16 @@ beforeAll(async () => {
     email: 'test2@test.com',
     password: '12345678',
   });
+
+  const postCategory1 = await appRequest
+    .post('/category/create')
+    .set('Authorization', `Bearer ${token1}`)
+    .send({
+      name: 'Category 1',
+    })
+    .expect(201);
+
+  categoryId = postCategory1.body.id;
 });
 
 afterAll(async () => {
@@ -65,6 +77,7 @@ describe('List To-Do Item', () => {
         .send({
           title: 'test',
           description: 'test',
+          categoryId: categoryId,
         })
         .set('Authorization', `Bearer ${token1}`)
         .expect(201);

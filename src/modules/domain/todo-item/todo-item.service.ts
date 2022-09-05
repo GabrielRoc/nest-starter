@@ -10,6 +10,7 @@ import {
 } from 'src/common/interfaces/pagination.interface';
 import { Repository } from 'typeorm';
 import { User } from '../../infrastructure/user/entities/user.entity';
+import { Category } from '../category/entities/category.entity';
 import { CreateTodoItemDto } from './dto/create-todo-item.dto';
 import { UpdateTodoItemDto } from './dto/update-todo-item.dto';
 import { TodoItem } from './entities/todo-item.entity';
@@ -25,6 +26,7 @@ export class TodoItemService {
   ): Promise<TodoItem> {
     const todoItem = this.todoItemsRepository.create({
       ...createTodoItemDto,
+      category: { id: createTodoItemDto.categoryId },
       createdBy: user,
     });
 
@@ -39,6 +41,7 @@ export class TodoItemService {
       where: { createdBy: { id: user.id } },
       skip: (paginationParams.page - 1) * paginationParams.limit,
       take: paginationParams.limit,
+      relations: ['category'],
     });
 
     const meta = {
@@ -57,7 +60,7 @@ export class TodoItemService {
   async findOne(id: string, user: User): Promise<TodoItem> {
     const todoItem = await this.todoItemsRepository.findOne({
       where: { id: id },
-      relations: ['createdBy'],
+      relations: ['createdBy', 'category'],
     });
     if (!todoItem) throw new NotFoundException();
     if (todoItem.createdBy.id !== user.id) throw new ForbiddenException();
@@ -75,6 +78,8 @@ export class TodoItemService {
       relations: ['createdBy'],
     });
     if (todoItem.createdBy.id !== user.id) throw new ForbiddenException();
+    if (updateTodoItemDto.categoryId)
+      todoItem.category = { id: updateTodoItemDto.categoryId } as Category;
     await this.todoItemsRepository.update(id, updateTodoItemDto);
     todoItem = await this.todoItemsRepository.findOneBy({ id: id });
 

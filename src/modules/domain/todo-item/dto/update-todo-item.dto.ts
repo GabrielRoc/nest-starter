@@ -12,6 +12,9 @@ export class UpdateTodoItemDto {
   @JoiSchema(['UPDATE'], Joi.boolean().optional())
   status: boolean;
 
+  @JoiSchema(['UPDATE'], Joi.string().uuid().optional())
+  categoryId: string;
+
   @JoiSchema(['UPDATE'], Joi.forbidden())
   createdBy: User;
 }
