@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from 'src/modules/domain/category/entities/category.entity';
-import { TodoItem } from 'src/modules/domain/todo-item/entities/todo-item.entity';
+import { ArtistEntity } from 'src/modules/domain/movies/entities/artist.entity';
+import { GenreEntity } from 'src/modules/domain/movies/entities/genre.entity';
+import { MovieEntity } from 'src/modules/domain/movies/entities/movie.entity';
 import { User } from '../user/entities/user.entity';
 
 @Module({
@@ -10,7 +11,7 @@ import { User } from '../user/entities/user.entity';
       type: 'sqlite',
       database: ':memory:',
       logging: false,
-      entities: [User, TodoItem, Category],
+      entities: [User, MovieEntity, ArtistEntity, GenreEntity],
       synchronize: true,
     }),
   ],
